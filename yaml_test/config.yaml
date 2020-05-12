@@ -1,0 +1,17 @@
+Parameter:
+  Threshold: 0.5
+
+Normal_ap_case:
+  # save every mask pictures
+  output_plt: 'Yes'
+
+  showAP : 'False'
+
+# It is like unknown case. (All the same class.)
+Same_class_ap_case: 
+  # save every mask pictures
+  output_plt: 'Yes'
+
+  # Show the ap image
+  showAP : 'False'
+
