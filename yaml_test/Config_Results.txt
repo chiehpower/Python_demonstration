@@ -1,0 +1,10 @@
+Here is the yaml information:
+
+Normal_ap_case:
+  output_plt: 'Yes'
+  showAP: 'False'
+Parameter:
+  Threshold: 0.5
+Same_class_ap_case:
+  output_plt: 'Yes'
+  showAP: 'False'
