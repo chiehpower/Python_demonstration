@@ -34,3 +34,27 @@ We can also our log of memory usage.
 fp=open('memory_profiler.log','w+')
 @profile(stream=fp)
 ```
+
+## __future__
+
+Sometimes we will see this below.
+```
+from __future__ import print_function
+```
+This is meaning that if you use python 2.x version, it will use the python 3.x version function. (New features from next version)
+
+Please check the [example](./future_demo.py).
+
+Use this Command:
+
+```
+python future_demo.py
+```
+
+Output:
+```
+  File "future_demo.py", line 4
+    print 'you are good'
+                       ^
+SyntaxError: invalid syntax
+```
