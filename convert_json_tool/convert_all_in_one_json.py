@@ -11,11 +11,12 @@ import json
 import shutil
 
 class CocoDataset():
-    def __init__(self, folder_path):
+    def __init__(self, folder_path, real_name=False):
         """
         folder path
         """
         self.folder_path = folder_path
+        self.real_name = real_name
 
     def generate_data_json(self, root_path=None):
         """
@@ -47,7 +48,7 @@ class CocoDataset():
             jf = json.loads(reader.read())
             collect_classes['categories'] = jf['categories']
 
-        num = 0
+        num = 1
         data_counter = 1
 
         image_list = []
@@ -56,8 +57,13 @@ class CocoDataset():
             print(f"---------------------------\nStatus: {tvt}\n")
 
             # copy image to new path and rename
-            img_format = data[tvt].split('.')[-1]
-            new_img_path = os.path.join(new_folder_path, f"{int(data_counter):09d}" + '.' + img_format)
+            
+            if self.real_name:
+                image_name = os.path.basename(data[tvt])
+                new_img_path = os.path.join(new_folder_path, image_name)
+            else:
+                img_format = data[tvt].split('.')[-1]
+                new_img_path = os.path.join(new_folder_path, f"{int(data_counter):09d}" + '.' + img_format)
             print(f"Image name: {new_img_path}")
             shutil.copyfile(data[tvt], new_img_path)
 
@@ -65,7 +71,8 @@ class CocoDataset():
                 jf = json.loads(reader.read())
 
             jf['images'][0]['id'] = jf['images'][0]['id'] + data_counter - 1 
-            jf['images'][0]['file_name'] = f"{int(data_counter):09d}" + '.' + img_format
+            if not self.real_name:
+                jf['images'][0]['file_name'] = f"{int(data_counter):09d}" + '.' + img_format
             
             for ii in range(len(jf['annotations'])):
                 jf['annotations'][ii]['image_id'] = jf['images'][0]['id']
@@ -90,7 +97,7 @@ class CocoDataset():
 
 if __name__ == "__main__":
 
-    folder_path = 'datasets/'
-
-    dataset_ = CocoDataset(folder_path)
+    folder_path = 'datasets'
+    real_name = False
+    dataset_ = CocoDataset(folder_path, real_name)
     dataset_.generate_data_json()
