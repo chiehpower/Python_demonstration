@@ -16,7 +16,6 @@ class WrapAndDownFiles(object):
 
         files  = {'file': open(zip_files, 'rb')}
 
-        # Because now we don't have second kind of tools, we set a default by the embedmask tool.
         config = {
             'arch' : 'x86_64',
             'filename' : 'test',
