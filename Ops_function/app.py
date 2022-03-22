@@ -45,7 +45,7 @@ class ops_dev(object):
                     Types_cond = st.selectbox("Type", ['Class', 'Scores','BBox_size'], key='COND'+str(lop)+str(nuIforand)+'class')
                 if Types_cond == 'Class':
                     with Ccol1:
-                        Class_cond = st.selectbox("Class", Class_, key='COND'+str(lop)+str(nuIforand)+'class')
+                        Class_cond = st.selectbox("Class", self.Class_, key='COND'+str(lop)+str(nuIforand)+'class')
                 else:
                     with Ccol1:
                         Class_cond = Types_cond
@@ -70,7 +70,7 @@ class ops_dev(object):
                         # with Nifcol1:
                         #     New_if_cond_ops = st.selectbox("Operator", ["And", "Or"], key='COND'+str(lop)+str(nuIforand)+str(New_if_cond))
                         # with NCcol1:
-                        #     Class_cond = st.selectbox("Class", Class_, key='COND'+str(lop)+str(nuIforand)+'class'+str(New_if_cond))
+                        #     Class_cond = st.selectbox("Class", self.Class_, key='COND'+str(lop)+str(nuIforand)+'class'+str(New_if_cond))
                         # with NScol1:
                         #     # sym_cond = st.selectbox("Choose a condition.", list(self.symbol_calculator.keys()), key='COND'+str(lop)+str(nuIforand)+'cond'+str(New_if_cond))
                         #     sym_cond = st.selectbox("Symbol", self.symbol_calculator, key='COND'+str(lop)+str(nuIforand)+'cond'+str(New_if_cond))
@@ -85,7 +85,7 @@ class ops_dev(object):
                         
                         if Types_cond == 'Class':
                             with NCcol1:
-                                Class_cond = st.selectbox("Class", Class_, key='COND'+str(lop)+str(nuIforand)+'class'+str(New_if_cond))
+                                Class_cond = st.selectbox("Class", self.Class_, key='COND'+str(lop)+str(nuIforand)+'class'+str(New_if_cond))
                         else:
                             Class_cond = Types_cond
                         with NScol1:
