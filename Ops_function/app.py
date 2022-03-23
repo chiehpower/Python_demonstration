@@ -95,7 +95,7 @@ class ops_dev(object):
                             if Types_cond == 'Class':
                                 number_cond = st.number_input("Number", 0, None, 1, key='COND'+str(lop)+str(nuIforand)+'number'+str(New_if_cond))
                             elif Types_cond == 'Scores':
-                                    Class_cond = st.slider("Score threshold", 0.00, 1.00, 0.7, 0.01, format="%f", key='COND'+str(lop)+str(nuIforand)+'number'+str(New_if_cond))
+                                number_cond = st.slider("Score threshold", 0.00, 1.00, 0.7, 0.01, format="%f", key='COND'+str(lop)+str(nuIforand)+'number'+str(New_if_cond))
                             elif Types_cond == 'BBox_size':
                                 number_cond = st.slider("BBox size threshold (%)", 0, 100, 80, 1, format="%d", key='COND'+str(lop)+str(nuIforand)+'number'+str(New_if_cond))
                                 number_cond *= 0.01
