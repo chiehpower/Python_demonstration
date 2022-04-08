@@ -35,6 +35,13 @@ $ sudo lsof -i :5432
 $ sudo pkill -u postgres
 ```
 
+2. `pip install psycopg2 : pg_config executable not found`
+
+Solution:
+
+```
+sudo apt-get install libpq-dev
+```
 
 ## Reference
 
