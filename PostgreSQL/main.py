@@ -7,7 +7,7 @@ Author: Chieh
 from psycopg2 import connect
 
 class PostgreSQLDB(object):
-    def __init__(self, host, port, user, password, dbname):
+    def __init__(self, host, port='5432', user='admin', password='admin', dbname='admin'):
         """
             dbname = "admin",
             user = "admin",
@@ -15,23 +15,29 @@ class PostgreSQLDB(object):
             host = "172.28.1.4",
             port = "5432"
         """
-        self.conn = connect(
-            dbname=dbname,
-            host=host,
-            port=port,
-            user=user,
-            password=password
-            )
+        self.host = host
+        self.port = port
+        self.user = user
+        self.password = password
+        self.dbname = dbname
 
     def execute_action(self, sql):
-        cur = self.conn.cursor()
+        conn = connect(
+            dbname=self.dbname,
+            host=self.host,
+            port=self.port,
+            user=self.user,
+            password=self.password
+            )
+
+        cur = conn.cursor()
         try:
             cur.execute(sql)
         except:
-            self.conn.close()
+            conn.close()
             return False
-        self.conn.commit()
-        self.conn.close()
+        conn.commit()
+        conn.close()
         return True
 
     def create_table(self, table_name):
@@ -57,12 +63,20 @@ class PostgreSQLDB(object):
             return False
     
     def get_tables(self):
-        cur = self.conn.cursor()
+        conn = connect(
+            dbname=self.dbname,
+            host=self.host,
+            port=self.port,
+            user=self.user,
+            password=self.password
+            )
+        cur = conn.cursor()
         cur.execute("""SELECT table_name FROM information_schema.tables
         WHERE table_schema = 'public'""")
         all_tables = []
         for table in cur.fetchall():
             all_tables.append(table[0])
+        conn.close()
         return all_tables
 
     def InsertOneRowIntoTable(self, table_name, key, value):
@@ -75,11 +89,19 @@ class PostgreSQLDB(object):
             return False
 
     def GetValueFromTable(self, table_name):
-        cur = self.conn.cursor()
+        conn = connect(
+            dbname=self.dbname,
+            host=self.host,
+            port=self.port,
+            user=self.user,
+            password=self.password
+            )
+        cur = conn.cursor()
         cur.execute("""SELECT * FROM {}""".format(table_name))
         all_tables = []
         for table in cur.fetchall():
             all_tables.append(table)
+        conn.close()
         return all_tables
 
     def DeleteValueFromTable(self, table_name, key):
@@ -99,17 +121,17 @@ if __name__ == "__main__":
     host = "172.28.1.4"
     port = "5432"
 
-    table_name = "Password1"
+    table_name = "Password"
 
     PostgreSQL = PostgreSQLDB(host, port, user, password, dbname)
 
     res = PostgreSQL.create_table(table_name)
     print(res)
 
-    # res = PostgreSQL.InsertOneRowIntoTable(table_name, "(id, name)", "(100, 'test123456')")
-    # print(res)
+    res = PostgreSQL.InsertOneRowIntoTable(table_name, "(id, name)", "(1, 'test123456')")
+    print(res)
     
-    res = PostgreSQL.get_tables()
+    # res = PostgreSQL.get_tables()
 
     res = PostgreSQL.GetValueFromTable(table_name)
 
