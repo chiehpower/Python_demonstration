@@ -3,7 +3,7 @@ import time
 
 start = time.time()
 
-files  = {'file': open('test.png', 'rb')}
+files  = {'files': open('test.png', 'rb')}
 
 ip = '' # your server ip
 url = 'http://{}:5001/normal_sending'.format(ip)

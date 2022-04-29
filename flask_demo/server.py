@@ -1,5 +1,8 @@
 import time
 from flask import Flask, request, jsonify
+import cv2
+import numpy as np
+
 app = Flask(__name__)
 
 @app.route('/devel',  methods=['POST', 'GET'])
@@ -12,13 +15,18 @@ def devel():
 def predict():  
     start_pre = time.time()
     if request.method == 'POST':
-        if 'file' not in request.files:
-           return "someting went wrong 1"
-           
-    print('request files checking takes: ', time.time()-start_pre, flush=True)
-    return jsonify({
-        'result':'Get to the devel'
-    })
+        if 'files' not in request.files:
+           return jsonify({
+            'result':'someting went wrong 1'
+        })
+
+        npimg = np.fromstring(request.files["files"].read(), np.uint8)
+        img = cv2.imdecode(npimg, cv2.IMREAD_COLOR)
+
+        print('request files checking takes: ', time.time()-start_pre, flush=True)
+        return jsonify({
+            'result':'Get to the devel'
+        })
 
 if __name__ == '__main__':
     # This is used when running locally.
