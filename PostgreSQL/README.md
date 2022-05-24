@@ -24,6 +24,14 @@ pip3 install psycopg2
     python3 main.py
     ```
 
+# Login the DB directly
+
+```
+docker exec -ti database bash
+psql -U admin
+SELECT * FROM Password; 
+```
+
 ## Trobuleshooting
 
 1. `PostgreSQL - port 5432 already in use`
