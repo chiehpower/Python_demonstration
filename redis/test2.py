@@ -31,3 +31,28 @@ print(r.hmget(state_id, "project_id"))
 # print(r.hget(5, "project_id"))
 
 # r.flushdb()
+
+####
+rule = [{"order": 0, "title": "If (Colombia > 1 )"}, {"order": 1, "title": "Or (Colombia > 1 )"}]
+
+num = len(rule)
+st = {"project_id": project_id, "rule": num}
+if num > 0:
+    for i in range(num):
+        for ii in rule:
+            if ii['order'] == i:
+                st['rule_' + str(i)] = ii['title']
+
+if not r.exists(state_id):
+    r.hmset(state_id, st)
+else:
+    if r.hget(state_id, "project_id") == project_id:
+        pass
+    else:
+        r.hmset(state_id, st)
+
+# print(r.hmget(state_id, "project_id"))
+
+print(r.hget(state_id, "project_id"))
+print(r.hget(state_id, "rule"))
+print(r.hget(state_id, "rule_0"))
