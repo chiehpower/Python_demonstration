@@ -56,19 +56,20 @@ def get_time():
     return idd
 
 if __name__ == '__main__':
-    hosts = ['10.1.2.102:9200']
+    # hosts = ['10.1.2.102:9200']
+    hosts = ['10.1.2.84:9200']
     es = Elasticsearch(hosts=hosts)
     time_ = 5
     index = 'news'
     user = 'admin'
 
     ### Delete the index
-    print("Delete the index first.")
+    print(">>> Delete the index first.")
     res = es.indices.delete(index=index, ignore=[400, 404])
     # print(res)
 
     ### Create a new index ...
-    print("Create a new index ...")
+    print(">>> Create a new index ...")
     # result = es.indices.create(index=index, ignore=[400, 404])
     # print(result)
 
@@ -84,14 +85,15 @@ if __name__ == '__main__':
     # inf_f = [False for i in range(50)]
     # inf_f = [True]
 
-    print("Start to do inference ...")
+    print(">>> Start to do inference ...")
     for i in range(20):
         ttt =  get_time() 
-        print(f'id={ttt}, and inference_result={inf_f[i]}')
+        print(f'id= {ttt}, and inference_result= {inf_f[i]}')
         if inf_f[i]:
             print("********** Ture Case ...")
         data = {'user': 'admin', 'inference_result': inf_f[i], 'time': ttt}
-        result = es.create(index=index, doc_type='inference', id=ttt, body=data)
+        # result = es.create(index=index, doc_type='inference', id=ttt, body=data)
+        result = es.create(index=index, doc_type='inference', id=ttt, document=data)
         check = check_results(user, index, time_)
         print(f'check={check}')
         if check:
