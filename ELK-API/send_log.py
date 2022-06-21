@@ -7,7 +7,7 @@ if pythonversion[:3] == '3.6':
     raise 'Cannot use Python 3.6'
 from elasticsearch import Elasticsearch
 import time
-from time import ctime
+from time import ctime, gmtime, strftime
 
 # from elasticsearch_dsl import Search
 
@@ -39,7 +39,7 @@ def check_results(user, index, time_):
     response = es.search(
         index=index, body=searchBody)
 
-    # print(response)
+    print(response)
     collect = []
     for i in response["hits"]['hits']:
         # print(i)
@@ -68,22 +68,24 @@ def get_time():
 def ConvertbackTime(number):
     idd = number / 10000000
     print('Today is: ',ctime(idd))
-    # print(idd)
+
+    ccc = time.strptime(ctime(idd), "%a %b %d %H:%M:%S %Y")
+    only_time = strftime("%H:%M:%S", ccc)
+    print(only_time)
 
 if __name__ == '__main__':
     # hosts = ['10.1.2.102:9200'] 
-    hosts = ['10.1.2.84:9200']
+    hosts = ['http://10.1.2.84:9200']
     es = Elasticsearch(hosts=hosts)
     time_ = 50
-    index = 'news'
-    user = 'admin'
+    index = 'logs'
+    # user = 'admin'
+    user = 'chieh'
 
     ### Delete the index
-    print(">>> Delete the index first.")
+    # print(">>> Delete the index first.")
     # res = es.indices.delete(index=index, ignore=[400, 404])
     # print(res)
-
-
 
     ### Create a new index ...
     print(">>> Create a new index ...")
@@ -123,7 +125,7 @@ if __name__ == '__main__':
         print(f'id= {ttt}, and state= {inf_f[i]}')
         # if inf_f[i]:
             # print("********** Ture Case ...")
-        data = {'user': 'admin', 'state_id': inf_f[i], 'time': ttt}
+        data = {'user': user, 'state_id': inf_f[i], 'time': ttt}
         print(data)
         # result = es.create(index=index, doc_type='inference', id=ttt, body=data)
         result = es.create(index=index, doc_type='inference', id=ttt, document=data)
