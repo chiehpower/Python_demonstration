@@ -77,10 +77,17 @@ if __name__ == '__main__':
         ccc = time.strptime(ctime(time_), "%a %b %d %H:%M:%S %Y")
         print(ccc)
         only_time = strftime("%b:%d:%H:%M:%S", ccc)
-        if only_time not in collect.keys():
-            collect[only_time] = 1
+        if model_name not in collect.keys(): ## First time in this state
+            collect[model_name] = {only_time: {'time': 1, 'users': [user]}}
         else:
-            collect[only_time] += 1
+            ## in the same state.
+            if only_time not in collect[model_name].keys():
+                collect[model_name][only_time] = {'time': 1, 'users': [user]}
+            else:   
+                collect[model_name][only_time]['time'] += 1
+                if user not in collect[model_name][only_time]['users']:
+                    collect[model_name][only_time]['users'].append(user)
+
 
         
         # collect.append(i['_source']['user'])
