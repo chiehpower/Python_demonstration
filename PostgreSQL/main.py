@@ -61,6 +61,28 @@ class PostgreSQLDB(object):
             return True
         else:
             return False
+
+    def create_numpy_array_table(self):
+        """
+        Create a table for storing numpy array. 
+        """
+        all_tables = self.get_tables()
+        if 'numpy_arrays' in all_tables:
+            print("Already existed.")
+            return False
+        # create a table
+        sql = """
+            CREATE TABLE numpy_arrays (
+                uuid VARCHAR PRIMARY KEY,
+                np_array_bytes BYTEA
+            );
+            """
+
+        res = self.execute_action(sql)
+        if res:
+            return True
+        else:
+            return False
     
     def get_tables(self):
         conn = connect(
