@@ -1,5 +1,6 @@
 # Use python to access PostgreSQL database
 
+Chec[here](https://chieh.us/docs/PostgreSQL/basic-commands)
 ## Goal
 
 
