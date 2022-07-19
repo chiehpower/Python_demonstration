@@ -47,37 +47,53 @@ if __name__ == "__main__":
         DROP TABLE IF EXISTS numpy_arrays;
         CREATE TABLE numpy_arrays (
             uuid VARCHAR PRIMARY KEY,
-            np_array_bytes BYTEA
+            patch BYTEA,
+            scale BYTEA
         )
         """
     )
     # #### -----------
 
-    some_array = np.random.rand(1500,550)
+    # some_array = np.random.rand(1500,550)
+    # print(some_array.shape)
     some_array_uuid = 'some_array'
+
+    testdummypatch = np.random.rand(27, 1, 256).astype(np.float32)
+    testdummyscale = np.random.randint(1, 4, (1,27)).astype(np.int32)
 
     res = cursor.execute(
         """
-        INSERT INTO numpy_arrays(uuid, np_array_bytes)
-        VALUES (%s, %s)
+        INSERT INTO numpy_arrays(uuid, patch, scale)
+        VALUES (%s, %s, %s)
         """,
-        (some_array_uuid, pickle.dumps(some_array))
+        (some_array_uuid, pickle.dumps(testdummypatch), pickle.dumps(testdummyscale))
     )
 
     print(res)
-
+    print("---")
     uuid = 'some_array'
-    for i in range(10):
+    for i in range(1):
         lt = time.time()
         cursor.execute(
             """
-            SELECT np_array_bytes
+            SELECT patch
             FROM numpy_arrays
             WHERE uuid=%s
             """,
             (uuid,)
         )
-        some_array = pickle.loads(cursor.fetchone()[0])
+        patch = pickle.loads(cursor.fetchone()[0])
+        print(patch)
+        cursor.execute(
+            """
+            SELECT scale
+            FROM numpy_arrays
+            WHERE uuid=%s
+            """,
+            (uuid,)
+        )
+        scale = pickle.loads(cursor.fetchone()[0])
+        print(scale)
         print("Take : {}".format(time.time()-lt))
     print("---")
-    print(type(some_array))
+    print(type(patch))
