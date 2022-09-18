@@ -89,4 +89,6 @@ if __name__ == '__main__':
                                     mui.icon.Send()
                                 mui.ListItemText('Item3-2')
 
-    st.write(st.session_state.item)
+    if st.session_state.item == '1':
+        tool_name = st.selectbox("Choose the tool.", ["Test"])
+        st.write(tool_name)
