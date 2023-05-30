@@ -2,36 +2,37 @@
 Check: https://barfi.readthedocs.io/en/latest/streamlit-widget.html
 """
 import streamlit as st
+st.set_page_config(layout="wide")
 
-# from barfi import st_barfi, Block
+from barfi import st_barfi, barfi_schemas, Block
+
+st.title("Web Page")
+def feed_func(self):
+    in_1 = self.get_interface(name='Input 1')
+    self.set_interface(name='Output 1', value=in_1)
+
+
+st.sidebar.write("Hi")
+Tools = { 'A': ['Nespresso', 'Snack'], 'B': ['OCR', 'Classify']} 
+new_tools = {}
+for i in Tools:
+    col = []
+    for j in Tools[i]:
+        block = Block(name=j)
+        block.add_input()
+        # block.add_input()
+        block.add_output()
+        block.add_compute(feed_func)
+        col.append(block)
+    new_tools[i] = col
+
+
+# from barfi import Block
 
 # feed = Block(name='Feed')
 # feed.add_output()
 
-# result = Block(name='Result')
-# result.add_output()
-
-# st_barfi(base_blocks=[feed, result])
-
-from barfi import st_barfi, barfi_schemas, Block
-import streamlit as st
-from barfi import st_barfi, Block
-
-add = Block(name='Addition')
-sub = Block(name='Subtraction')
-mul = Block(name='Multiplication')
-div = Block(name='Division')
-
-# barfi_result = st_barfi(base_blocks= [add, sub, mul, div])
-# or if you want to use a category to organise them in the frontend sub-menu
-# barfi_result = st_barfi(base_blocks= {'Op 1': [add, sub], 'Op 2': [mul, div]})
-from barfi import Block
-
-feed = Block(name='Feed')
-feed.add_output()
-def feed_func(self):
-    self.set_interface(name='Output 1', value=4)
-feed.add_compute(feed_func)
+# feed.add_compute(feed_func)
 
 splitter = Block(name='Splitter')
 splitter.add_input()
@@ -44,29 +45,36 @@ def splitter_func(self):
     self.set_interface(name='Output 2', value=value)
 splitter.add_compute(splitter_func)
 
-mixer = Block(name='Mixer')
-mixer.add_input()
-mixer.add_input()
-mixer.add_output()
-def mixer_func(self):
-    in_1 = self.get_interface(name='Input 1')
-    in_2 = self.get_interface(name='Input 2')
-    value = (in_1 + in_2)
-    self.set_interface(name='Output 1', value=value)
-mixer.add_compute(mixer_func)
+# mixer = Block(name='Mixer')
+# mixer.add_input()
+# mixer.add_input()
+# mixer.add_output()
+# def mixer_func(self):
+#     in_1 = self.get_interface(name='Input 1')
+#     in_2 = self.get_interface(name='Input 2')
+#     value = (in_1 + in_2)
+#     self.set_interface(name='Output 1', value=value)
+# mixer.add_compute(mixer_func)
 
-result = Block(name='Result')
-result.add_input()
-def result_func(self):
-    in_1 = self.get_interface(name='Input 1')
-result.add_compute(result_func)
+# result = Block(name='Result')
+# result.add_input()
+# def result_func(self):
+#     in_1 = self.get_interface(name='Input 1')
+# result.add_compute(result_func)
 
 load_schema = st.selectbox('Select a saved schema:', barfi_schemas())
 
 compute_engine = st.checkbox('Activate barfi compute engine', value=False)
 
-barfi_result = st_barfi(base_blocks=[feed, result, mixer, splitter],
-                    compute_engine=compute_engine, load_schema=load_schema)
+# barfi_result = st_barfi(base_blocks= new_tools)
+
+barfi_result = st_barfi(base_blocks=new_tools,
+                    compute_engine=compute_engine, 
+                    load_schema=load_schema)
 
 if barfi_result:
-    st.write(barfi_result)
+    st.write("Result:")
+    # st.write(barfi_result)
+    st.write(barfi_result['editor_state'])
+
+    
