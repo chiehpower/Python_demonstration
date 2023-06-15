@@ -13,7 +13,9 @@ def feed_func(self):
 
 
 st.sidebar.write("Hi")
-Tools = { 'A': ['Nespresso', 'Snack'], 'B': ['OCR', 'Classify']} 
+Tools = { 'A': ['Nespresso', 'Snack'], 
+        'B': ['OCR', 'Classify']} 
+
 new_tools = {}
 for i in Tools:
     col = []
@@ -22,9 +24,41 @@ for i in Tools:
         block.add_input()
         # block.add_input()
         block.add_output()
-        block.add_compute(feed_func)
+        # block.add_compute(feed_func)
         col.append(block)
     new_tools[i] = col
+
+
+Tools = { 'Bridge': ['Combine', 'Split'], 
+        'Tool': ['Crop', 'Filter'],
+        'Root': ['Start', 'End']} 
+
+for i in Tools:
+    col = []
+    for j in Tools[i]:
+        ## Define each action
+        block = Block(name=j)
+
+        if j == 'Combine':    
+            block.add_input()
+            block.add_input()
+            block.add_output()
+        elif j == 'Split':
+            block.add_input()
+            block.add_output()
+            block.add_output()
+        elif j == 'Start':
+            block.add_output()
+        elif j == 'End':
+            block.add_input()
+        else:
+            block.add_input()
+            block.add_output()
+
+        # block.add_compute(feed_func)
+        col.append(block)
+    new_tools[i] = col
+
 
 
 # from barfi import Block
@@ -74,7 +108,7 @@ barfi_result = st_barfi(base_blocks=new_tools,
 
 if barfi_result:
     st.write("Result:")
-    # st.write(barfi_result)
+    st.write(barfi_result)
     st.write(barfi_result['editor_state'])
 
     
