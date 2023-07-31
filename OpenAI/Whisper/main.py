@@ -6,7 +6,7 @@ import whisper
 import time
 import os 
 
-input_file = 'wav/en-US_sample.wav'
+input_file = 'data/en-US_sample.wav'
 model = whisper.load_model("base")
 result = model.transcribe(input_file)
 print(result)
@@ -35,7 +35,7 @@ What is natural language processing?
 '''
 
 # model = whisper.load_model("base")
-folder = 'wav'
+folder = 'data'
 all_files = os.listdir(folder)
 for i in all_files:
     if i.split('.')[-1] != 'wav' and i.split('.')[-1] != 'ogg':
