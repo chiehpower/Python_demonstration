@@ -38,3 +38,18 @@ I attach the audio files in the `data` folder.
 python main.py
 ```
 
+# Deploy on the server endpoint
+
+## Server side
+
+```
+cd Server
+
+python3 app.py
+```
+
+## Client side
+
+```
+python3 client.py
+```
