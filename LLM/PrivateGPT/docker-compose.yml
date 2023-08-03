@@ -1,0 +1,20 @@
+# Maintainer: Chieh
+
+version: "3.8"
+services:
+  privateGPT:
+    image: python:3.10.12
+    shm_size: 20gb
+    volumes:
+      - /root/privateGPT:/workspace
+    tty: true
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              capabilities: [ gpu ]
+    network_mode: host
+    container_name: privateGPT
+    command: bash -c "bash"
+    restart: always
