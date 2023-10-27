@@ -2,7 +2,7 @@
 
 version: "3.8"
 services:
-  database:
+  db:
     image: postgres:latest
     environment:
       - POSTGRES_USER=admin
@@ -12,7 +12,7 @@ services:
     volumes:
       - ${PWD}/pg-data:/var/lib/postgresql/data
       - ${PWD}/sql_script:/root/test
-    container_name: database
+    container_name: db
     tty: true
     ports:
      - "5432:5432"

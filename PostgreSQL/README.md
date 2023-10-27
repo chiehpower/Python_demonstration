@@ -28,7 +28,7 @@ pip3 install psycopg2
 # Login the DB directly
 
 ```
-docker exec -ti database bash
+docker exec -ti db bash
 psql -U admin
 SELECT * FROM Password; 
 ```
