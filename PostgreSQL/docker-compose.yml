@@ -1,8 +1,9 @@
-version: "3.8"
+# Maintainer: Chieh
 
+version: "3.8"
 services:
   database:
-    image: postgres
+    image: postgres:latest
     environment:
       - POSTGRES_USER=admin
       - POSTGRES_PASSWORD=admin
@@ -10,18 +11,9 @@ services:
       - PGDATA=/var/lib/postgresql/data/pgdata
     volumes:
       - ${PWD}/pg-data:/var/lib/postgresql/data
+      - ${PWD}/sql_script:/root/test
     container_name: database
     tty: true
     ports:
      - "5432:5432"
     restart: unless-stopped
-    networks:
-      node_net:
-        ipv4_address: 172.28.1.4
-
-networks:
-  node_net:
-    ipam:
-      driver: default
-      config:
-        - subnet: 172.28.0.0/16

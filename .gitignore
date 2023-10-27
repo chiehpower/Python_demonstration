@@ -3,4 +3,5 @@ multiprocessing
 documents
 note.txt
 plot.pdf
-SQL_postgresql/pg-data
+PostgreSQL/pg-data
+**/pg-data
