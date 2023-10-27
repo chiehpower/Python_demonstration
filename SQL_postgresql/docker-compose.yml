@@ -1,0 +1,20 @@
+# Maintainer: Chieh
+
+version: "3.8"
+services:
+  db:
+    image: postgres:latest
+    environment:
+      - POSTGRES_USER=admin
+      - POSTGRES_PASSWORD=admin
+      - POSTGRES_DB=admin
+      - PGDATA=/var/lib/postgresql/data/pgdata
+    volumes:
+      - ./pg-data:/var/lib/postgresql/data
+      - ${PWD}:/root/test
+    container_name: db
+    tty: true
+    # ports:
+    # # systemctl stop postgresql
+    #   - "5432:5432"
+    restart: unless-stopped
