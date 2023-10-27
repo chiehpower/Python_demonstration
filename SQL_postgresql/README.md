@@ -39,8 +39,6 @@ Start the database server
     ```
     Output:
     ```
-    root@e0a374a289e5:~/test# psql -U admin -w admin -a -f get_values_by_time.sql
-
     SELECT * FROM users
     WHERE created >= '2023-10-26 00:00:00' AND created <= '2023-10-27 05:00:00';
     user_id | username |          created
@@ -54,5 +52,35 @@ Start the database server
     ------------+--------------+---------------------+--------------------
             1 | Project A    | 2023-10-30 14:45:00 |                  1
     (1 row)
+
+    SELECT users.username, projects.project_name
+    FROM users
+    JOIN projects ON users.user_id = projects.created_by_user_id
+    WHERE projects.created >= '2023-10-30 00:00:00' AND projects.created <= '2023-10-31 00:00:00'
+    AND projects.project_name = 'Project A';
+    username | project_name
+    ----------+--------------
+    user1    | Project A
+    (1 row)
+
+    SELECT projects.project_name
+    FROM projects
+    WHERE projects.created >= '2023-10-30 00:00:00' AND projects.created <= '2023-10-31 00:00:00'
+    AND projects.project_name = 'Project A';
+    project_name
+    --------------
+
+    Project A
+    (1 row)
+
+    SELECT u.username, p.project_name
+    FROM projects p
+    JOIN users u ON p.created_by_user_id = u.user_id
+    WHERE p.created >= '2023-10-30 00:00:00' AND p.created <= '2023-10-31 00:00:00'
+    AND p.project_name = 'Project A'
+    AND u.username = 'user1';
+    username | project_name
+    ----------+--------------
+    user1    | Project A
+    (1 row)
     ```
-    
