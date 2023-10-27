@@ -8,4 +8,5 @@ CREATE TABLE users (
 CREATE TABLE projects (
     project_id SERIAL PRIMARY KEY,
     project_name VARCHAR(100) NOT NULL,
+    created TIMESTAMP,
     created_by_user_id INT REFERENCES users(user_id));
