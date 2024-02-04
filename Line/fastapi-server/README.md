@@ -3,7 +3,7 @@
 ## Prerequisites
 
 ```
-pip install fastapi uvicorn python-multipart
+pip install --no-cache-dir -r requirements.txt
 ```
 
 ## Usage
