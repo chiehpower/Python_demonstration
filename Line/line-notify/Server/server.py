@@ -8,8 +8,7 @@ def sending_image():
 
         key_ = ''
         headers = {
-            "Authorization": "Bearer " + key_, 
-            "Content-Type" : "application/x-www-form-urlencoded"
+            "Authorization": "Bearer " + key_
         }
 
         payload = {
