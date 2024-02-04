@@ -5,3 +5,4 @@ note.txt
 plot.pdf
 PostgreSQL/pg-data
 **/pg-data
+**/__pycache__/
