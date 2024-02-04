@@ -1,7 +1,7 @@
 import requests
 
 def send_line_notification(message):
-    url = "http://10.1.2.84:8123/send-line-notification/"
+    url = "http://0.0.0.0:8123/send-line-notification/"
 
     data = {"message": message}
     
