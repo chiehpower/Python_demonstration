@@ -1,4 +1,4 @@
-Kafka-PostgreSQL Integration
+# Kafka-PostgreSQL Integration
 
 This folder demonstrates the integration of Apache Kafka for message processing and PostgreSQL for database storage using Go and Python.
 
