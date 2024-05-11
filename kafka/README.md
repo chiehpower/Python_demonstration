@@ -55,6 +55,11 @@ Simple checking:
 cd /kafka
 go run client.go
 ```
+If you wanna try the integration with SQL DB.
+
+```
+go run client_db.go
+```
 
 ### Producer Part:
 

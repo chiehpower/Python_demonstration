@@ -1,7 +1,7 @@
 FROM python:3.11
 
 RUN apt update && apt install -y bsdmainutils curl git mercurial make binutils bison gcc build-essential
-RUN pip3 install kafka-python
+RUN pip3 install kafka-python Pillow
 RUN bash -c 'curl -s -S -L https://raw.githubusercontent.com/moovweb/gvm/master/binscripts/gvm-installer | bash'
 
 ENV GVM_ROOT /root/.gvm
