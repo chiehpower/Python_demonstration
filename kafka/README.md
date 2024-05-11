@@ -44,6 +44,9 @@ go run client.go
 
 ### Producer Part:
 
+> [!IMPORTANT]  
+> Please copy `.env.sample` file to `.env` and change to your info.
+
 ```
 cd /kafka
 python3 producer.py

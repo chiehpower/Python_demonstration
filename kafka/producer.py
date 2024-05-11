@@ -73,7 +73,6 @@ with Image.open(image_path) as img:
     resized_img = img.resize((target_width, target_height))
 img.close()
 
-# 保存调整后的图片
 resized_img.save('resized_image.jpg')
 start = time.time()
 
