@@ -28,6 +28,27 @@ Implement the script:
 python3 consumer.py
 ```
 
+## Docker
+
+```
+docker build -t chiehpower/kafka_practice:v0.1 .    
+```
+
+Then access to WebServer container. If you wanna implement Go file, just use `go mod tidy` to set up the relevant files.
+
+### Consumer Part:
+```
+cd /kafka
+go run client.go
+```
+
+### Producer Part:
+
+```
+cd /kafka
+python3 producer.py
+```
+
 ## UI
 
 You can access the dashboard: `0.0.0.0:9021`

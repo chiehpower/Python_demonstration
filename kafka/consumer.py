@@ -1,16 +1,17 @@
 from kafka import KafkaConsumer
 
 # Kafka broker地址和主題名稱
-bootstrap_servers = '0.0.0.0:9092'
+bootstrap_servers = ['kafka:9092']
 topic_name = 'baeldung_linux'
 
 # 設置Kafka消費者
 consumer = KafkaConsumer(topic_name,
-                         bootstrap_servers=bootstrap_servers,
-                         consumer_timeout_ms=10)
-print(f"Pass: {consumer}")
+                         bootstrap_servers=bootstrap_servers)
+                        #  group_id= 'group2')
+                        #  consumer_timeout_ms=1000)
 # 從主題中讀取消息
 for message in consumer:
+    # print(message)
     # 解析消息的主題、分區、偏移量、鍵和值
     print("hello")
     topic = message.topic
@@ -26,7 +27,9 @@ print("test")
 consumer.close()
 
 # from kafka import KafkaConsumer
+# from kafka import TopicPartition
 
-# consumer = KafkaConsumer('my_topic', group_id= 'group2', bootstrap_servers= ['10.1.2.84:9092'])
+# consumer = KafkaConsumer(group_id= 'group2', bootstrap_servers= ['kafka:9092'])
+# consumer.assign([TopicPartition(topic= 'my_topic', partition= 0)])
 # for msg in consumer:
 #     print(msg)
