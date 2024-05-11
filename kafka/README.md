@@ -51,6 +51,8 @@ python3 producer.py
 
 ## UI
 
+*Please turn on the container of the control-center.*
+
 You can access the dashboard: `0.0.0.0:9021`
 
 ![](assets/1.png)
