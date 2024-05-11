@@ -6,6 +6,9 @@ import (
 	"github.com/segmentio/kafka-go"
 	"log"
 	"strings"
+
+	"io/ioutil"
+	"os"
 )
 
 func getKafkaReader(kafkaURL, topic string) *kafka.Reader {
@@ -21,7 +24,8 @@ func getKafkaReader(kafkaURL, topic string) *kafka.Reader {
 func main() {
 
 	kafkaURL := "kafka:9092"
-	topic := "baeldung_linux"
+	// topic := "baeldung_linux"
+	topic := "image_topic"
 
 	reader := getKafkaReader(kafkaURL, topic)
 
@@ -36,6 +40,16 @@ func main() {
 		if err != nil {
 			log.Fatalln(err)
 		}
+
 		fmt.Printf("message at topic: %v partition: %v offset: %v value: %s\n", m.Topic, m.Partition, m.Offset, string(m.Value))
+
+		// Save the image.
+		err = ioutil.WriteFile("received_image_client.jpg", m.Value, os.ModePerm)
+		if err != nil {
+			log.Println("Error saving image:", err)
+			continue
+		}
+
+		fmt.Println("Image received and saved successfully.")
 	}
 }

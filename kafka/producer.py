@@ -2,6 +2,12 @@ from kafka import KafkaProducer
 import time
 from datetime import datetime
 import json
+import base64
+import io
+from PIL import Image
+"""
+pip3 install Pillow
+"""
 
 a = time.time()
 producer = KafkaProducer(bootstrap_servers=['kafka:9092'])
@@ -51,3 +57,37 @@ for i in range(1):
     print(result)
     print(f"No.{i} take {time.time()-b}\n")
     time.sleep(0.5)
+
+
+
+print("\nStart to send an image to Kafka...")
+image_path = 'assets/test.jpeg'
+
+
+# 读取图片并调整尺寸
+with Image.open(image_path) as img:
+    # 设置目标尺寸
+    target_width = 400  
+    target_height = 400
+    # 调整图片尺寸
+    resized_img = img.resize((target_width, target_height))
+img.close()
+
+# 保存调整后的图片
+resized_img.save('resized_image.jpg')
+start = time.time()
+
+# 可选：将调整后的图片数据读取到内存中
+buffered = io.BytesIO()
+resized_img.save(buffered, format="JPEG")
+resized_image_data = buffered.getvalue()
+
+print("Original Size:", img.size)
+print("Resized Size:", resized_img.size)
+
+future = producer.send('image_topic', value=resized_image_data)
+result = future.get(timeout=10)
+print(result)
+print(f"Sending an image takes {time.time() - start}")
+
+producer.close()
