@@ -27,6 +27,9 @@ func main() {
 
 	defer reader.Close()
 
+	// 如果有設定這個 則會從最新的開始讀取，而不是從頭。
+	reader.SetOffset(kafka.LastOffset) 
+
 	fmt.Println("start consuming ... !!")
 	for {
 		m, err := reader.ReadMessage(context.Background())
