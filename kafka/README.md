@@ -51,11 +51,16 @@ Simple checking:
 
 ### Consumer Part:
 
+For setup Go env, please use the `go mod tidy` command first.
+
+The example `client.go` is to showcase how to extract the image and save it as a `received_image_client.jpg` file.
+
 ```
 cd /kafka
 go run client.go
 ```
-If you wanna try the integration with SQL DB.
+
+If you wanna try the integration example with SQL DB.
 
 ```
 go run client_db.go

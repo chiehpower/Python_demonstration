@@ -10,8 +10,8 @@ pip3 install Pillow
 """
 
 a = time.time()
-# server = '0.0.0.0:9092' # From inside
-server = '10.1.2.84:9093' # From outside
+# server = '0.0.0.0:9092'  # From inside
+server = '10.1.2.84:9093'  # From outside
 producer = KafkaProducer(bootstrap_servers=[server])
 print(f"producer take {time.time()-a}")
 
