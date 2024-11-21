@@ -131,3 +131,24 @@ curl http://0.0.0.0:8000/v1/chat/completions -H "Content-Type: application/json"
   ]
 }'
 ```
+
+---
+
+
+## microsoft/Phi-3.5-vision-instruct
+
+Server:
+
+```bash
+vllm serve --port 7861 microsoft/Phi-3.5-vision-instruct \
+				   --trust-remote-code  
+				   --disable_sliding_window 
+				   --gpu-memory-utilization=0.9 
+				   --max-model-len=73600
+```
+
+- gpu memory: 38537MiB / 40960MiB
+- vllm version: 0.6.0
+- model name: `microsoft/Phi-3.5-vision-instruct`
+
+Clinet script:
