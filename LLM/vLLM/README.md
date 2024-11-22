@@ -7,6 +7,8 @@
 2. If an image is too large (e.g., a PNG file), you can resize it to a smaller image and then convert it to Base64 for transmission.  
 3. Please use **Python 3.10**.  
 4. If your GPU compute capability is below 8, use the argument `--dtype=half`.  
+5. Adjust the argument `--max_model_len` that can save some memory. However, it will impact the total number of tokens (Input + Output).
+6. Adjust the arguemnt `--cpu-offload-gb` that it can move some computations in the CPU. (The inference speed will be slower.)
 
 ## Usage
 
