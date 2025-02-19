@@ -154,3 +154,65 @@ vllm serve --port 7861 microsoft/Phi-3.5-vision-instruct \
 - model name: `microsoft/Phi-3.5-vision-instruct`
 
 Clinet script:
+
+---
+
+## Qwen/Qwen2.5-VL-7B-Instruct
+
+### Pre-requisite:
+
+- Python Version: ≥ 3.9
+
+### Docker
+
+```bash
+docker pull qwenllm/qwenvl:2.5-cu121
+
+
+docker run -itd --gpus=all \
+	--restart always --name vllm_qwen_test_2 \
+  -v /var/run/docker.sock:/var/run/docker.sock \
+  --shm-size=200GB \
+  -p 8000:8000 \
+  -it qwenllm/qwenvl:2.5-cu121 vllm serve --port 8000 Qwen/Qwen2.5-VL-7B-Instruct --max_model_len=32768
+```
+
+### Client
+
+```bash
+start_time=$(date +%s)
+
+image_file="image2.jpg"
+base64_image=$(base64 -w 0 "$image_file")
+
+
+curl http://0.0.0.0:8000/v1/chat/completions -H "Content-Type: application/json" -d '{
+  "model": "Qwen/Qwen2.5-VL-7B-Instruct",
+  "messages": [
+    {"role": "system", "content": "You are Qwen, created by Alibaba Cloud. You are a helpful assistant."}, 
+    {
+      "role": "user", 
+      "content": [
+        {
+          "type": "image_url",
+          "image_url": {
+            "url": "data:image/jpg;base64,'"${base64_image}"'"
+          }
+        },
+        {
+          "type": "text",
+          "text": "please extract information in this image?"
+        }
+      ]
+    }
+  ],
+  "temperature": 0.7,
+  "top_p": 0.8,
+  "repetition_penalty": 1.05,
+  "max_tokens": 512
+}'
+
+end_time=$(date +%s)
+elapsed_time=$((end_time - start_time))
+echo "Elapsed time: $elapsed_time seconds"
+```
