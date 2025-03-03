@@ -3,6 +3,7 @@ from playwright.sync_api import sync_playwright, expect, Page
 import pytest
 from dotenv import load_dotenv
 import os
+import time 
 load_dotenv()
 
 @pytest.fixture
@@ -41,19 +42,51 @@ def test_go_to_webpage(page: Page, url: str, credentials: dict):
     button.click()
     print("Done for Login")
 
-def test_model_center(page: Page):
-    # Click the sidebar of the Model Center
-    page.click('role=link[name="Model"]')
+def test_project_center(page: Page):
+    # Click the sidebar of the Project Center
+    page.click('role=link[name="Project"]')
     h1_locator = page.locator("h1")
-    expect(h1_locator).to_have_text("Model List")
-    print("Model List")
+    expect(h1_locator).to_have_text(" Create your AI Project. ")
+    print("Create Project")
 
-def test_upload_model(page: Page):
     # Click the Create button
     page.click('role=link[name="Create"]')
-    print("Creat Page")
-    page.click("button:has-text('Browse on your device')")
-    page.set_input_files('input[type="file"]', "./model.onnx")
+    print("Create a project")
+
+    # source = page.locator(".flow-bar__item.flow-state")
+    # target = page.locator(".vue-flow__node.vue-flow__node-flow-start.nopan.draggable.selectable")
+    # source.drag_to(target)
+    source_box = page.locator(".flow-bar__item.flow-state").bounding_box()
+    target_box = page.locator(".vue-flow__node.vue-flow__node-flow-start.nopan.draggable.selectable").bounding_box()
+    if source_box and target_box:
+        page.mouse.move(source_box["x"] + source_box["width"]/2, source_box["y"] + source_box["height"]/2)
+        page.mouse.down()
+        page.mouse.move(target_box["x"] + target_box["width"]/2, target_box["y"] + target_box["height"]+70) 
+        page.mouse.up()
+    print("Add a state")
+    
+    source1 = page.locator(".flex.gap-2.justify-between.items-center.w-full")
+    source1.click()
+    print("Click an AI tool.")
+    # instanceSeg = page.locator(".iconify.i-my-icon\\3A instance.min-size-14.size-14.rounded-lg")
+
+    # start_node = page.locator(".vue-flow__node.vue-flow__node-start.nopan.draggable.selected.selectable")
+    # instanceSeg.drag_to(start_node)
+
+
+# def test_model_center(page: Page):
+#     # Click the sidebar of the Model Center
+#     page.click('role=link[name="Model"]')
+#     h1_locator = page.locator("h1")
+#     expect(h1_locator).to_have_text("Model List")
+#     print("Model List")
+
+# def test_upload_model(page: Page):
+#     # Click the Create button
+#     page.click('role=link[name="Create"]')
+#     print("Create Page")
+#     page.click("button:has-text('Browse on your device')")
+#     page.set_input_files('input[type="file"]', "./model.onnx")
 
 
 if __name__ == "__main__":
@@ -68,7 +101,8 @@ if __name__ == "__main__":
             "password": os.getenv("PASSWORD")
         }
         test_go_to_webpage(page, url, credentials)
-        test_model_center(page)
-        test_upload_model(page)
+        test_project_center(page)
+        # test_model_center(page)
+        # test_upload_model(page)
         input("Press Enter to close...")
         browser.close()
