@@ -77,10 +77,30 @@ def test_project_center(page: Page):
     source1 = page.locator(".flex.gap-2.justify-between.items-center.w-full")
     source1.click()
     print("Click an AI tool.")
-    # instanceSeg = page.locator(".iconify.i-my-icon\\3A instance.min-size-14.size-14.rounded-lg")
 
-    # start_node = page.locator(".vue-flow__node.vue-flow__node-start.nopan.draggable.selected.selectable")
-    # instanceSeg.drag_to(start_node)
+    page.wait_for_load_state("networkidle")
+    page.wait_for_timeout(1000)
+
+    # Get InstanceSeg node
+    instance_seg_node = page.locator("//div[contains(@class, 'AI-node__node')]//p[text()='InstanceSeg']/..")
+    print(f"Found {instance_seg_node.count()} InstanceSeg nodes")
+    if instance_seg_node.count() == 0:
+        raise Exception("InstanceSeg node not found!")
+    if not instance_seg_node.is_visible():
+        instance_seg_node.scroll_into_view_if_needed()
+        if not instance_seg_node.is_visible():
+            raise Exception("InstanceSeg node is not visible!")
+
+    # Get Start node
+    start_node = page.locator("//div[contains(@class, 'vue-flow__node-start')][contains(., 'Start')]")
+    print(f"Found {start_node.count()} Start nodes")
+    if start_node.count() == 0:
+        raise Exception("Start node not found!")
+
+    handle_right = start_node.locator(".vue-flow__handle-right")
+    if handle_right.count() == 0:
+        raise Exception("Start node does not have a right handle!")
+    instance_seg_node.drag_to(handle_right)
 
 
 def test_model_center(page: Page):
@@ -185,7 +205,7 @@ if __name__ == "__main__":
         model_shared_data = test_upload_model(new_page, model_shared_data)
         test_delete_model(new_page, model_shared_data)
 
-        # test_project_center(new_page)
+        test_project_center(new_page)
 
         input("Press Enter to close...")
         browser.close()
