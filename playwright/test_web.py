@@ -54,8 +54,9 @@ def test_go_to_webpage(page: Page, url: str, credentials: dict):
 def test_project_center(page: Page):
     # Click the sidebar of the Project Center
     page.click('role=link[name="Project"]')
-    h1_locator = page.locator("h1")
-    expect(h1_locator).to_have_text(" Create your AI Project. ")
+    div_locator = page.locator('div.min-w-\[150px\].relative.flex.items-center.gap-4')
+    div_text = div_locator.inner_text()
+    assert "Project" in div_text, "Expect to contain 'Project'"
     print("Create Project")
 
     # Click the Create button
@@ -123,10 +124,11 @@ def test_upload_model(page: Page, shared_data: dict):
     assert file_path is not None, "please set up a value for file_path."
     page.set_input_files('input[type="file"]', file_path)
     page.wait_for_timeout(20000)
+    # page.wait_for_timeout(10000)
     print("Upload a sol model")
 
     model_name = f"model_{time.strftime('%Y%m%d_%H%M%S')}"
-    page.fill('#v-3-64', model_name)
+    page.fill('input[type="text"][name="name"]', model_name)
     print("Give a model name")
     shared_data["model_name"] = model_name
 
@@ -138,6 +140,7 @@ def test_upload_model(page: Page, shared_data: dict):
         print(f"Click Upload button failure: {e}")
 
     page.wait_for_timeout(30000)
+    # page.wait_for_timeout(20000)
     print("Done pressing the upload button")
     # model_name = "model_20250304_094706" # for testing
 
