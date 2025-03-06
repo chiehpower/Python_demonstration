@@ -103,6 +103,60 @@ def test_project_center(page: Page):
         raise Exception("Start node does not have a right handle!")
     instance_seg_node.drag_to(handle_right)
 
+    # Turn on the right sidebar
+    target_element = page.locator('span[class="absolute text-[9px] text-[#63707B] inset-0 p-[1px] truncate"]')
+    if target_element.count() == 0:
+        raise Exception("Target span element not found!")
+    elif target_element.count() > 1:
+        print(f"Warning: Found {target_element.count()} matching elements, using the first one")
+        target_element = target_element.first
+    target_element.wait_for(state="visible")
+    target_element.dblclick()
+    page.wait_for_timeout(100)
+    print("Turn on the right sidebar")
+
+    # Turn on the model center
+    select_button = page.locator('button[class*="focus:outline-none"][class*="rounded-md"][class*="text-xs"] span:has-text("Select")').locator('..')
+    if select_button.count() == 0:
+        raise Exception("Select button not found!")
+    select_button.wait_for(state="visible")
+    select_button.click()
+    page.wait_for_timeout(100)
+    print("Turn on the model center")
+
+    # Select the first model card
+    card_item = page.locator('div.model-list-card__item')
+    if card_item.count() == 0:
+        raise Exception("Model list card item not found!")
+    elif card_item.count() > 1:
+        print(f"Warning: Found {card_item.count()} matching card items, using the first one")
+        card_item = card_item.first
+    card_item.wait_for(state="visible")
+    card_item.click()
+    page.wait_for_timeout(100)
+    print("Select the first model card")
+
+    # Click the confirm button
+    confirm_button = page.locator('button[class*="focus:outline-none"][class*="rounded-md"][class*="bg-primary-500"] span:has-text("Confirm")').locator('..')
+    if confirm_button.count() == 0:
+        raise Exception("Confirm button not found!")
+    confirm_button.wait_for(state="visible")
+    confirm_button.click()
+    page.wait_for_timeout(100)
+    print("Click the confirm button")
+
+    # Close the right sidebar
+    target_element = page.locator('span[class="absolute text-[9px] text-[#63707B] inset-0 p-[1px] truncate"]')
+    if target_element.count() == 0:
+        raise Exception("Target span element not found!")
+    elif target_element.count() > 1:
+        print(f"Warning: Found {target_element.count()} matching elements, using the first one")
+        target_element = target_element.first
+    target_element.wait_for(state="visible")
+    target_element.click()
+    page.wait_for_timeout(100)
+    print("Close the right sidebar")
+
 
 def test_model_center(page: Page):
     # Click the sidebar of the Model Center
@@ -202,11 +256,11 @@ if __name__ == "__main__":
             "password": os.getenv("password")
         }
         test_go_to_webpage(new_page, url, credentials)
-        test_model_center(new_page)
-        model_shared_data = {"model_name": None}
+        # test_model_center(new_page)
         # model_shared_data = {"model_name": "model_20250304_095844"}
-        model_shared_data = test_upload_model(new_page, model_shared_data)
-        test_delete_model(new_page, model_shared_data)
+        # model_shared_data = {"model_name": None}
+        # model_shared_data = test_upload_model(new_page, model_shared_data)
+        # test_delete_model(new_page, model_shared_data)
 
         test_project_center(new_page)
 
