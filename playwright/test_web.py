@@ -101,7 +101,27 @@ def test_project_center(page: Page):
     handle_right = start_node.locator(".vue-flow__handle-right")
     if handle_right.count() == 0:
         raise Exception("Start node does not have a right handle!")
-    instance_seg_node.drag_to(handle_right)
+
+    # 取得 Start Node 的座標 (Bounding Box)
+    start_node_box = start_node.bounding_box()
+    if not start_node_box:
+        raise Exception("Failed to get bounding box of Start node!")
+
+    # 計算 Start Node 的右邊邊緣位置並向右偏移
+    offset = 50  # 偏移量，例如向右偏移 50 像素
+    target_x = start_node_box["x"] + start_node_box["width"] + offset
+    target_y = start_node_box["y"] + (start_node_box["height"] / 2)
+    print(f"Target drop position: ({target_x}, {target_y})")
+
+    # 將 InstanceSeg node 拖曳到偏移後的右邊位置
+    instance_seg_box = instance_seg_node.bounding_box()
+    page.mouse.move(instance_seg_box['x'] + instance_seg_box['width'] / 2, 
+                    instance_seg_box['y'] + instance_seg_box['height'] / 2)
+    page.mouse.down()
+
+    page.mouse.move(target_x, target_y)
+    page.mouse.up()
+    # instance_seg_node.drag_to(handle_right)
 
     # Turn on the right sidebar
     target_element = page.locator('span[class="absolute text-[9px] text-[#63707B] inset-0 p-[1px] truncate"]')
@@ -157,6 +177,103 @@ def test_project_center(page: Page):
     page.wait_for_timeout(100)
     print("Close the right sidebar")
 
+    # Start to connect a line from start node to InstanceSeg node
+    start_handle = page.locator('div[data-handlepos="right"].vue-flow__handle-right.source').nth(1)
+    if start_handle.count() != 1:
+        raise Exception(f"Expected 1 element, but found {start_handle.count()}")
+
+    start_box = start_handle.bounding_box()
+    start_x = start_box["x"] + start_box["width"] / 2
+    start_y = start_box["y"] + start_box["height"] / 2
+    print(f"Start node right handle position: ({start_x}, {start_y})")
+
+    InstanceSeg_handle = page.locator('div.vue-flow__handle-left.target').nth(2)  # 或 nth(1), nth(2)
+    if InstanceSeg_handle.count() != 1:
+        raise Exception(f"Expected 1 element for InstanceSeg Handle, but found {InstanceSeg_handle.count()}")
+    InstanceSeg_box = InstanceSeg_handle.bounding_box()
+    InstanceSeg_x = InstanceSeg_box["x"] + InstanceSeg_box["width"] / 2
+    InstanceSeg_y = InstanceSeg_box["y"] + InstanceSeg_box["height"] / 2
+    print(f"InstanceSeg left Handle position: ({InstanceSeg_x}, {InstanceSeg_y})")
+
+    page.mouse.move(start_x, start_y)
+    page.mouse.down()
+    page.wait_for_timeout(1000)
+    page.mouse.move(InstanceSeg_x, InstanceSeg_y)
+    page.wait_for_timeout(1000)
+    page.mouse.up()
+    print("Line has been successfully drawn from the start handle to the InstanceSeg left handle.")
+    print("-----")
+
+    # Start to connect a line from InstanceSeg node to end node
+    InstanceSeg_right_handle = page.locator('div[data-handlepos="right"].vue-flow__handle-right.source').nth(2)
+    if InstanceSeg_right_handle.count() != 1:
+        raise Exception(f"Expected 1 element for InstanceSeg right handle, but found {InstanceSeg_right_handle.count()}")
+    InstanceSeg_right_box = InstanceSeg_right_handle.bounding_box()
+    InstanceSeg_right_x = InstanceSeg_right_box["x"] + InstanceSeg_right_box["width"] / 2
+    InstanceSeg_right_y = InstanceSeg_right_box["y"] + InstanceSeg_right_box["height"] / 2
+    print(f"InstanceSeg right handle position: ({InstanceSeg_right_x}, {InstanceSeg_right_y})")
+
+    end_left_handle = page.locator('div[data-handlepos="left"].vue-flow__handle-left.target').nth(1)
+    end_left_box = end_left_handle.bounding_box()
+    end_left_x = end_left_box["x"] + end_left_box["width"] / 2
+    end_left_y = end_left_box["y"] + end_left_box["height"] / 2
+    print(f"End left handle position: ({end_left_x}, {end_left_y})")
+
+    page.mouse.move(InstanceSeg_right_x + 1, InstanceSeg_right_y)
+    page.mouse.down()
+    page.wait_for_timeout(1000)
+    page.mouse.move(end_left_x, end_left_y)
+    page.wait_for_timeout(1000)
+    page.mouse.up()
+    print("Line has been successfully drawn from InstanceSeg right handle to end left handle.")
+    print("-----")
+
+    # Now we need to connect a line in the State level from Start node to InstanceSeg state
+    bottom_handle = page.locator('div[data-handlepos="bottom"].vue-flow__handle-bottom.source').nth(0)
+    if bottom_handle.count() != 1:
+        raise Exception(f"Expected 1 element for bottom handle, but found {bottom_handle.count()}")
+    bottom_handle.wait_for(state="visible")
+    bottom_box = bottom_handle.bounding_box()
+    bottom_x = bottom_box["x"] + bottom_box["width"] / 2
+    bottom_y = bottom_box["y"] + bottom_box["height"] / 2
+    print(f"Bottom handle position: ({bottom_x}, {bottom_y})")
+
+    top_handle = page.locator('div[data-handlepos="top"].vue-flow__handle-top.target').nth(0)
+    if top_handle.count() != 1:
+        raise Exception(f"Expected 1 element for top handle, but found {top_handle.count()}")
+    top_handle.wait_for(state="visible")
+    top_box = top_handle.bounding_box()
+    top_x = top_box["x"] + top_box["width"] / 2
+    top_y = top_box["y"] + top_box["height"] / 2
+    print(f"Top handle position: ({top_x}, {top_y})")
+
+    page.mouse.move(bottom_x, bottom_y)
+    page.mouse.down()
+    page.wait_for_timeout(1000)
+    page.mouse.move(top_x, top_y)
+    page.wait_for_timeout(1000)
+    page.mouse.up()
+    print("Line has been successfully drawn from bottom handle to top handle.")
+    print("-----")
+
+    # Need to choose a mode
+    button = page.locator('button.relative.w-full').nth(1)
+    button.wait_for(state="visible")
+    button.click()
+    print("Clicked the main button.")
+
+    page.wait_for_timeout(500)  
+    default_option = page.locator('li:has-text("Default")')    
+    default_option.wait_for(state="visible")
+    default_option.click()
+    print("Selected the Default option.")
+
+    # Click the Upload button
+    upload_button = page.locator('button span:has-text("Upload")').locator('..')
+    upload_button.wait_for(state="visible")
+    upload_button.click()
+    print("Upload button clicked.")
+    print("Successfully create a project.")
 
 def test_model_center(page: Page):
     # Click the sidebar of the Model Center
