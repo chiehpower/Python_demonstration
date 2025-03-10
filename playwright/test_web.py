@@ -275,6 +275,34 @@ def test_project_center(page: Page):
     print("Upload button clicked.")
     print("Successfully create a project.")
 
+
+def test_delete_project(page: Page):
+    print("Start to test deleting a project.")
+    page.click('role=link[name="Project"]')
+    div_locator = page.locator('div.min-w-\[150px\].relative.flex.items-center.gap-4')
+    div_text = div_locator.inner_text()
+    assert "Project" in div_text, "Expect to contain 'Project'"
+    print("Now we are in the Project area.")
+
+    try:
+        ellipsis = page.locator(".iconify.i-heroicons\\:ellipsis-horizontal-20-solid").nth(0)
+        ellipsis.wait_for(state="visible", timeout=10000)  # Wait up to 10 seconds
+        ellipsis.click()
+        page.wait_for_timeout(2000)
+
+        delete_button = page.get_by_role("menuitem", name="Delete")
+        delete_button.wait_for(state="visible", timeout=5000)
+        delete_button.click()
+
+        confirm_delete = page.locator("button.bg-primary-500").filter(has_text="Delete")
+        confirm_delete.wait_for(state="visible", timeout=5000)
+        confirm_delete.click()
+
+        print("Done deleting the project.")
+    except Exception as e:
+        print(f"Error: {str(e)}")
+
+
 def test_model_center(page: Page):
     # Click the sidebar of the Model Center
     page.click('role=link[name="Model"]')
@@ -379,7 +407,8 @@ if __name__ == "__main__":
         # model_shared_data = test_upload_model(new_page, model_shared_data)
         # test_delete_model(new_page, model_shared_data)
 
-        test_project_center(new_page)
+        # test_project_center(new_page)
+        test_delete_project(new_page)
 
         input("Press Enter to close...")
         browser.close()
