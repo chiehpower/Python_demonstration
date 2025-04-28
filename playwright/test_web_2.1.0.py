@@ -222,10 +222,10 @@ def test_project_center(page: Page):
     print("Clicked the main button.")
 
     page.wait_for_timeout(500)  
-    default_option = page.locator('li:has-text("Default")')    
-    default_option.wait_for(state="visible")
-    default_option.click()
-    print("Selected the Default option.")
+    first_option = page.locator('li[role="option"]').first
+    first_option.wait_for(state="visible")
+    first_option.click()
+    print("Selected the first available option.")
 
     # Click the Upload button
     upload_button = page.locator('button span:has-text("Upload")').locator('..')
