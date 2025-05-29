@@ -6,3 +6,6 @@ plot.pdf
 PostgreSQL/pg-data
 **/pg-data
 **/__pycache__/
+**/.venv/
+**/.env
+**/.DS_Store
