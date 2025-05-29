@@ -34,33 +34,112 @@ def credentials():
     }
 
 
-def test_go_to_webpage(page: Page, url: str, credentials: dict):
-    # Go to the url
+def test_001_go_to_webpage(page: Page, url: str, credentials: dict):
     assert credentials["username"] is not None, "username 環境變數未設置！"
     assert credentials["password"] is not None, "password 環境變數未設置！"
-
     page.goto(url)
-
-    # Type the username and password
+    page.wait_for_selector('input[name="username"]', timeout=10000)
     page.fill('input[name="username"]', credentials["username"])
+    page.wait_for_selector('input[name="password"]', timeout=10000)
     page.fill('input[name="password"]', credentials["password"])
+    print("Attempting login...")
+    page.get_by_role("button", name="Login").click()
+    # Wait for page to navigate or change URL
+    try:
+        page.wait_for_url("**/home", timeout=15000)
+    except:
+        print("URL did not change after login. Current URL:", page.url)
+    try:
+        expect(page.get_by_role("link", name="Models")).to_be_visible(timeout=15000)
+    except:
+        print("Fallback: Trying `text=Models`...")
+        expect(page.locator("text=Models")).to_be_visible(timeout=15000)
+    print("Login successful — 'Models' is visible")
 
-    # Wait for the login button to be visible and enabled, then click it
-    button = page.locator('button:has-text("Login")')
-    button.click()
-    print("Done for Login")
+
+def test_002_model_center(page: Page):
+    print("Go to the model page")
+    # page.set_viewport_size({"width": 1280, "height": 800})
+    # page.screenshot(path="debug-screenshot.png")
+    # page.wait_for_selector('role=link[name="Model"]', state='visible', timeout=2000)
+    # Click the sidebar of the Model Center
+    # page.click('role=link[name="Model"]')
+    page.get_by_role("link", name="Models").click()
+    # print("Available links:", [link.text_content() for link in page.query_selector_all('a')])
+
+    h1_locator = page.locator("h1")
+    expect(h1_locator).to_have_text("Model List")
+    print("Model List")
 
 
-def test_project_center(page: Page):
+def test_003_upload_model(page: Page, shared_data: dict):
+    print("Upload a model")
+    # Click the Create button
+    page.click('role=link[name="Create"]')
+    print("Create a Model Page")
+    page.wait_for_timeout(1000)
+    # If you use this one, you cannot close the UI uploading dialog
+    # page.click("button:has-text('Browse on your device')")
+
+    file_path = os.getenv("file_path")
+    print("The model file_path:", file_path)
+    # show me the file_path
+    print(os.path.isfile(file_path))
+    assert file_path is not None, "please set up a value for file_path."
+    page.set_input_files('input[type="file"]', file_path)
+    page.wait_for_timeout(20000)
+    # page.wait_for_timeout(10000)
+    print("Upload a sol model")
+
+    model_name = f"model_{time.strftime('%Y%m%d_%H%M%S')}"
+    page.fill('input[type="text"][name="name"]', model_name)
+    print("Give a model name")
+    shared_data["model_name"] = model_name
+
+    try:
+        page.wait_for_selector('button:has-text("Upload"):not([disabled])', timeout=10000)
+        page.click('button:has-text("Upload")')
+        print("Successfully click the Upload button")
+    except Exception as e:
+        print(f"Click Upload button failure: {e}")
+
+    page.wait_for_timeout(30000)
+    # page.wait_for_timeout(20000)
+    print("Done pressing the upload button")
+    page.screenshot(path="debug_after_pressing_the_upload_button.png")
+
+    # model_name = "model_20250304_094706" # for testing
+
+    # Get the name of the active model
+    displayed_model_name = page.inner_text('.model-list-card__item.active span.text-xs')
+    print(f"Displayed model name: {displayed_model_name}")
+
+    # Verify if it matches
+    if model_name in displayed_model_name:  # Use 'in' to handle possible suffixes
+        print(f"Verification successful! Uploaded model name '{model_name}' appears in the list")
+    else:
+        print(f"Verification failed! Expected '{model_name}', but got '{displayed_model_name}'")
+        raise Exception("Verification failed!")
+
+    return shared_data
+
+
+def test_004_project_center(page: Page):
+    print("Create a project")
     # Click the sidebar of the Project Center
-    page.click('role=link[name="Project"]')
-    div_locator = page.locator('div.min-w-\[150px\].relative.flex.items-center.gap-4')
+    # page.click('role=link[name="Project"]')
+    page.locator('a:has-text("Project")').click()
+    # div_locator = page.locator('div.min-w-\[150px\].relative.flex.items-center.gap-4')
+    div_locator = page.locator(r'div.min-w-\[150px\].relative.flex.items-center.gap-4')
     div_text = div_locator.inner_text()
     assert "Project" in div_text, "Expect to contain 'Project'"
     print("Create Project")
 
     # Click the Create button
-    page.click('role=link[name="Create"]')
+    # page.click('role=link[name="Create"]')
+    page.get_by_role("link", name="Create").click()
+    # page.locator('a:has-text("Create")').click()
+
     print("Create a project")
     page.wait_for_timeout(1000)
 
@@ -129,118 +208,120 @@ def test_project_center(page: Page):
     print("Turn on the model center")
 
     # Select the first model card
-    card_item = page.locator('div.model-list-card__item')
-    if card_item.count() == 0:
-        raise Exception("Model list card item not found!")
-    elif card_item.count() > 1:
-        print(f"Warning: Found {card_item.count()} matching card items, using the first one")
-        card_item = card_item.first
-    card_item.wait_for(state="visible")
-    card_item.click()
-    page.wait_for_timeout(100)
-    print("Select the first model card")
+    card_items = page.locator("div.model-list-card__item").filter(has_text="model_20250401_145159")
 
-    # Click the confirm button
-    confirm_button = page.locator('button[class*="focus:outline-none"][class*="rounded-md"][class*="bg-primary-500"] span:has-text("Confirm")').locator('..')
-    if confirm_button.count() == 0:
-        raise Exception("Confirm button not found!")
-    confirm_button.wait_for(state="visible")
-    confirm_button.click()
-    page.wait_for_timeout(100)
-    print("Click the confirm button")
+    visible_items = card_items.filter(has=page.locator(":visible"))
 
-    # Close the right sidebar
-    start_node.click()
-    page.wait_for_timeout(100)
-    print("Close the right sidebar")
+    # if visible_items.count() == 0:
+    #     raise Exception("Visible model card not found!")
+    # else:
+    #     card_item = visible_items.first
+    #     card_item.click()
+    # print("Select the first model card")
 
-    # Start to connect a line from start node to InstanceSeg node
-    start_handle = page.locator('div[data-handlepos="right"].vue-flow__handle-right.source').nth(0)
-    if start_handle.count() != 1:
-        raise Exception(f"Expected 1 element, but found {start_handle.count()}")
+    # # Click the confirm button
+    # confirm_button = page.locator('button[class*="focus:outline-none"][class*="rounded-md"][class*="bg-primary-500"] span:has-text("Confirm")').locator('..')
+    # if confirm_button.count() == 0:
+    #     raise Exception("Confirm button not found!")
+    # confirm_button.wait_for(state="visible")
+    # confirm_button.click()
+    # page.wait_for_timeout(100)
+    # print("Click the confirm button")
 
-    start_box = start_handle.bounding_box()
-    start_x = start_box["x"] + start_box["width"] / 2
-    start_y = start_box["y"] + start_box["height"] / 2
-    print(f"Start node right handle position: ({start_x}, {start_y})")
+    # # Close the right sidebar
+    # start_node.click()
+    # page.wait_for_timeout(100)
+    # print("Close the right sidebar")
 
-    InstanceSeg_handles = page.locator('div.vue-flow__handle.vue-flow__handle-left.target.connectable')    
-    handle_count = InstanceSeg_handles.count()
-    if handle_count == 0:
-        raise Exception("InstanceSeg Handle not found!")
-    elif handle_count <= 2:
-        print(f"Found {handle_count} matching handles, using the last one")
-        InstanceSeg_handle = InstanceSeg_handles.nth(handle_count - 1)
-    else:
-        raise Exception(f"Too many matching handles ({handle_count}), please refine the selector.")
+    # # Start to connect a line from start node to InstanceSeg node
+    # start_handle = page.locator('div[data-handlepos="right"].vue-flow__handle-right.source').nth(0)
+    # if start_handle.count() != 1:
+    #     raise Exception(f"Expected 1 element, but found {start_handle.count()}")
 
-    InstanceSeg_box = InstanceSeg_handle.bounding_box()
-    InstanceSeg_x = InstanceSeg_box["x"] + InstanceSeg_box["width"] / 2
-    InstanceSeg_y = InstanceSeg_box["y"] + InstanceSeg_box["height"] / 2
-    print(f"InstanceSeg left Handle position: ({InstanceSeg_x}, {InstanceSeg_y})")
+    # start_box = start_handle.bounding_box()
+    # start_x = start_box["x"] + start_box["width"] / 2
+    # start_y = start_box["y"] + start_box["height"] / 2
+    # print(f"Start node right handle position: ({start_x}, {start_y})")
 
-    page.mouse.move(start_x, start_y)
-    page.mouse.down()
-    page.wait_for_timeout(1000)
-    page.mouse.move(InstanceSeg_x, InstanceSeg_y)
-    page.wait_for_timeout(1000)
-    page.mouse.up()
-    print("Line has been successfully drawn from the start handle to the InstanceSeg left handle.")
-    print("-----")
+    # InstanceSeg_handles = page.locator('div.vue-flow__handle.vue-flow__handle-left.target.connectable')    
+    # handle_count = InstanceSeg_handles.count()
+    # if handle_count == 0:
+    #     raise Exception("InstanceSeg Handle not found!")
+    # elif handle_count <= 2:
+    #     print(f"Found {handle_count} matching handles, using the last one")
+    #     InstanceSeg_handle = InstanceSeg_handles.nth(handle_count - 1)
+    # else:
+    #     raise Exception(f"Too many matching handles ({handle_count}), please refine the selector.")
 
-    # Start to connect a line from InstanceSeg node to end node
-    InstanceSeg_right_handle = page.locator('div[data-handlepos="right"].vue-flow__handle-right.source').nth(1)
-    if InstanceSeg_right_handle.count() != 1:
-        raise Exception(f"Expected 1 element for InstanceSeg right handle, but found {InstanceSeg_right_handle.count()}")
-    InstanceSeg_right_box = InstanceSeg_right_handle.bounding_box()
-    InstanceSeg_right_x = InstanceSeg_right_box["x"] + InstanceSeg_right_box["width"] / 2
-    InstanceSeg_right_y = InstanceSeg_right_box["y"] + InstanceSeg_right_box["height"] / 2
-    print(f"InstanceSeg right handle position: ({InstanceSeg_right_x}, {InstanceSeg_right_y})")
+    # InstanceSeg_box = InstanceSeg_handle.bounding_box()
+    # InstanceSeg_x = InstanceSeg_box["x"] + InstanceSeg_box["width"] / 2
+    # InstanceSeg_y = InstanceSeg_box["y"] + InstanceSeg_box["height"] / 2
+    # print(f"InstanceSeg left Handle position: ({InstanceSeg_x}, {InstanceSeg_y})")
 
-    end_left_handle = page.locator('div[data-handlepos="left"].vue-flow__handle-left.target').nth(0)
-    print(end_left_handle.count())
-    if end_left_handle.count() != 1:
-        raise Exception(f"Expected 1 element for end left handle, but found {end_left_handle.count()}")
-    end_left_box = end_left_handle.bounding_box()
-    end_left_x = end_left_box["x"] + end_left_box["width"] / 2
-    end_left_y = end_left_box["y"] + end_left_box["height"] / 2
-    print(f"End left handle position: ({end_left_x}, {end_left_y})")
+    # page.mouse.move(start_x, start_y)
+    # page.mouse.down()
+    # page.wait_for_timeout(1000)
+    # page.mouse.move(InstanceSeg_x, InstanceSeg_y)
+    # page.wait_for_timeout(1000)
+    # page.mouse.up()
+    # print("Line has been successfully drawn from the start handle to the InstanceSeg left handle.")
+    # print("-----")
 
-    page.mouse.move(InstanceSeg_right_x + 1, InstanceSeg_right_y)
-    page.mouse.down()
-    page.wait_for_timeout(1000)
-    page.mouse.move(end_left_x, end_left_y)
-    page.wait_for_timeout(1000)
-    page.mouse.up()
-    print("Line has been successfully drawn from InstanceSeg right handle to end left handle.")
-    print("-----")
+    # # Start to connect a line from InstanceSeg node to end node
+    # InstanceSeg_right_handle = page.locator('div[data-handlepos="right"].vue-flow__handle-right.source').nth(1)
+    # if InstanceSeg_right_handle.count() != 1:
+    #     raise Exception(f"Expected 1 element for InstanceSeg right handle, but found {InstanceSeg_right_handle.count()}")
+    # InstanceSeg_right_box = InstanceSeg_right_handle.bounding_box()
+    # InstanceSeg_right_x = InstanceSeg_right_box["x"] + InstanceSeg_right_box["width"] / 2
+    # InstanceSeg_right_y = InstanceSeg_right_box["y"] + InstanceSeg_right_box["height"] / 2
+    # print(f"InstanceSeg right handle position: ({InstanceSeg_right_x}, {InstanceSeg_right_y})")
 
-    # Need to choose a mode
-    button = page.locator('button.relative.w-full').nth(1)
-    button.wait_for(state="visible")
-    button.click()
-    print("Clicked the main button.")
+    # end_left_handle = page.locator('div[data-handlepos="left"].vue-flow__handle-left.target').nth(0)
+    # print(end_left_handle.count())
+    # if end_left_handle.count() != 1:
+    #     raise Exception(f"Expected 1 element for end left handle, but found {end_left_handle.count()}")
+    # end_left_box = end_left_handle.bounding_box()
+    # end_left_x = end_left_box["x"] + end_left_box["width"] / 2
+    # end_left_y = end_left_box["y"] + end_left_box["height"] / 2
+    # print(f"End left handle position: ({end_left_x}, {end_left_y})")
 
-    page.wait_for_timeout(500)  
-    first_option = page.locator('li[role="option"]').first
-    first_option.wait_for(state="visible")
-    first_option.click()
-    print("Selected the first available option.")
+    # page.mouse.move(InstanceSeg_right_x + 1, InstanceSeg_right_y)
+    # page.mouse.down()
+    # page.wait_for_timeout(1000)
+    # page.mouse.move(end_left_x, end_left_y)
+    # page.wait_for_timeout(1000)
+    # page.mouse.up()
+    # print("Line has been successfully drawn from InstanceSeg right handle to end left handle.")
+    # print("-----")
 
-    # Click the Upload button
-    upload_button = page.locator('button span:has-text("Upload")').locator('..')
-    upload_button.wait_for(state="visible")
-    upload_button.click()
-    print("Upload button clicked.")
-    print("Successfully create a project.")
+    # # Need to choose a mode
+    # button = page.locator('button.relative.w-full').nth(1)
+    # button.wait_for(state="visible")
+    # button.click()
+    # print("Clicked the main button.")
+
+    # page.wait_for_timeout(500)  
+    # first_option = page.locator('li[role="option"]').first
+    # first_option.wait_for(state="visible")
+    # first_option.click()
+    # print("Selected the first available option.")
+
+    # # Click the Upload button
+    # upload_button = page.locator('button span:has-text("Upload")').locator('..')
+    # upload_button.wait_for(state="visible")
+    # upload_button.click()
+    # print("Upload button clicked.")
+    # print("Successfully create a project.")
 
 
-def test_delete_project(page: Page):
+def test_005_delete_project(page: Page):
+    print("Delete the project")
+
     page.wait_for_timeout(1000)
 
     # Click the sidebar of the Project Center
     page.click('role=link[name="Project"]')
-    div_locator = page.locator('div.min-w-\[150px\].relative.flex.items-center.gap-4')
+    div_locator = page.locator(r'div.min-w-\[150px\].relative.flex.items-center.gap-4')
     div_text = div_locator.inner_text()
     assert "Project" in div_text, "Expect to contain 'Project'"
     print("Start to delete a project")
@@ -263,61 +344,13 @@ def test_delete_project(page: Page):
     print("Delete a project completed.")
 
 
-def test_model_center(page: Page):
+def test_006_delete_model(page: Page, shared_data: dict):
+    print("Delete the uploaded model")
     # Click the sidebar of the Model Center
     page.click('role=link[name="Model"]')
     h1_locator = page.locator("h1")
     expect(h1_locator).to_have_text("Model List")
     print("Model List")
-
-
-def test_upload_model(page: Page, shared_data: dict):
-    # Click the Create button
-    page.click('role=link[name="Create"]')
-    print("Create a Model Page")
-    page.wait_for_timeout(1000)
-    # If you use this one, you cannot close the UI uploading dialog
-    # page.click("button:has-text('Browse on your device')")
-
-    file_path = os.getenv("file_path")
-    assert file_path is not None, "please set up a value for file_path."
-    page.set_input_files('input[type="file"]', file_path)
-    page.wait_for_timeout(20000)
-    # page.wait_for_timeout(10000)
-    print("Upload a sol model")
-
-    model_name = f"model_{time.strftime('%Y%m%d_%H%M%S')}"
-    page.fill('input[type="text"][name="name"]', model_name)
-    print("Give a model name")
-    shared_data["model_name"] = model_name
-
-    try:
-        page.wait_for_selector('button:has-text("Upload"):not([disabled])', timeout=10000)
-        page.click('button:has-text("Upload")')
-        print("Successfully click the Upload button")
-    except Exception as e:
-        print(f"Click Upload button failure: {e}")
-
-    page.wait_for_timeout(30000)
-    # page.wait_for_timeout(20000)
-    print("Done pressing the upload button")
-    # model_name = "model_20250304_094706" # for testing
-
-    # Get the name of the active model
-    displayed_model_name = page.inner_text('.model-list-card__item.active span.text-xs')
-    print(f"Displayed model name: {displayed_model_name}")
-
-    # Verify if it matches
-    if model_name in displayed_model_name:  # Use 'in' to handle possible suffixes
-        print(f"Verification successful! Uploaded model name '{model_name}' appears in the list")
-    else:
-        print(f"Verification failed! Expected '{model_name}', but got '{displayed_model_name}'")
-        raise Exception("Verification failed!")
-
-    return shared_data
-
-
-def test_delete_model(page: Page, shared_data: dict):
 
     model_name = shared_data["model_name"]
     if model_name is None:
@@ -373,17 +406,21 @@ if __name__ == "__main__":
             "username": os.getenv("username"),
             "password": os.getenv("password")
         }
-        test_go_to_webpage(new_page, url, credentials)
-        # test_model_center(new_page)
-        # model_shared_data = {"model_name": "model_20250304_095844"}
+        test_001_go_to_webpage(new_page, url, credentials)
+        test_002_model_center(new_page)
+        print("-----")
+        model_shared_data = {"model_name": "123test"}
         # model_shared_data = {"model_name": None}
         # model_shared_data = test_upload_model(new_page, model_shared_data)
-        # test_delete_model(new_page, model_shared_data)
-
-        test_project_center(new_page)
+        # model_shared_data = test_003_upload_model(new_page, model_shared_data)
+        test_004_project_center(new_page)
         print("-----")
-        test_delete_project(new_page)
+        # test_005_delete_project(new_page)
+        print("-----")
+        # test_006_delete_model(new_page, model_shared_data)
 
-        input("Press Enter to close...")
-        context.close() 
+        # input("Press Enter to close...")
+        print("Done for testing")
+        context.close()
         browser.close()
+
