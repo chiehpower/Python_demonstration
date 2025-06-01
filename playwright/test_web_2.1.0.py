@@ -87,7 +87,7 @@ def test_003_upload_model(page: Page, shared_data: dict):
     print(os.path.isfile(file_path))
     assert file_path is not None, "please set up a value for file_path."
     page.set_input_files('input[type="file"]', file_path)
-    page.wait_for_timeout(20000)
+    page.wait_for_timeout(30000)
     # page.wait_for_timeout(10000)
     print("Upload a sol model")
 
@@ -97,12 +97,19 @@ def test_003_upload_model(page: Page, shared_data: dict):
     shared_data["model_name"] = model_name
 
     try:
-        page.wait_for_selector('button:has-text("Upload"):not([disabled])', timeout=10000)
-        page.click('button:has-text("Upload")')
-        print("Successfully click the Upload button")
+        # 等待按鈕出現並確保可點擊
+        page.wait_for_selector('button[type="submit"]:has-text("Upload")', timeout=10000)
+        
+        # 檢查按鈕是否可見且可點擊
+        button = page.locator('button[type="submit"]:has-text("Upload")')
+        button.wait_for(state="visible", timeout=5000)
+        
+        # 點擊按鈕
+        button.click()
+        print("Successfully clicked the Upload button")
+        
     except Exception as e:
         print(f"Click Upload button failure: {e}")
-
     page.wait_for_timeout(30000)
     # page.wait_for_timeout(20000)
     print("Done pressing the upload button")
@@ -409,15 +416,15 @@ if __name__ == "__main__":
         test_001_go_to_webpage(new_page, url, credentials)
         test_002_model_center(new_page)
         print("-----")
-        model_shared_data = {"model_name": "123test"}
-        # model_shared_data = {"model_name": None}
+        # model_shared_data = {"model_name": "model_20250601_230803"}
+        model_shared_data = {"model_name": None}
         # model_shared_data = test_upload_model(new_page, model_shared_data)
-        # model_shared_data = test_003_upload_model(new_page, model_shared_data)
-        test_004_project_center(new_page)
+        model_shared_data = test_003_upload_model(new_page, model_shared_data)
+        # test_004_project_center(new_page)
         print("-----")
         # test_005_delete_project(new_page)
         print("-----")
-        # test_006_delete_model(new_page, model_shared_data)
+        test_006_delete_model(new_page, model_shared_data)
 
         # input("Press Enter to close...")
         print("Done for testing")
