@@ -1,0 +1,38 @@
+services:
+  vaultwarden:
+    image: vaultwarden/server:latest
+    container_name: vaultwarden
+    restart: unless-stopped
+    volumes:
+      - ./vw-data/:/data/
+    expose:
+      - 80 
+    environment:
+      - SMTP_HOST=smtp.gmail.com
+      - SMTP_PORT=465
+      - SMTP_FROM=
+      - SMTP_USERNAME=
+      - SMTP_PASSWORD= # remember to use an app password if 2FA is enabled
+      - SMTP_SECURITY=force_tls
+      # - SMTP_PASSWORD=Less-Secure-App-Passw0rd
+      - ROCKET_PORT=80
+      - DOMAIN=https://{url}
+    networks:
+      - default
+
+  nginx:
+    image: nginx:20250623
+    container_name: nginx
+    restart: unless-stopped
+    depends_on:
+      - vaultwarden
+    ports:
+      - "80:80"
+    # volumes:
+    #   - ./nginx.conf:/etc/nginx/nginx.conf:ro
+    networks:
+      - default
+
+networks:
+  default:
+    name: default
