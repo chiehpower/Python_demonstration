@@ -9,3 +9,4 @@ PostgreSQL/pg-data
 **/.venv/
 **/.env
 **/.DS_Store
+Vaultwarden/vw-data
