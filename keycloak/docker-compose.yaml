@@ -1,0 +1,29 @@
+version: "3.9"
+
+services:
+  keycloak:
+    image: quay.io/keycloak/keycloak:26.4.5
+    command: start-dev
+    environment:
+      KC_BOOTSTRAP_ADMIN_USERNAME: admin
+      KC_BOOTSTRAP_ADMIN_PASSWORD: admin
+    ports:
+      - "127.0.0.1:8080:8080"
+    volumes:
+      - keycloak-data:/opt/keycloak/data
+
+  app:
+    build: .
+    environment:
+      KEYCLOAK_SERVER_URL: http://keycloak:8080/
+      KEYCLOAK_REALM: master
+      KEYCLOAK_CLIENT_ID: admin-cli
+    ports:
+      - "127.0.0.1:5001:5001"
+    volumes:
+      - .:/app
+    depends_on:
+      - keycloak
+
+volumes:
+  keycloak-data:
